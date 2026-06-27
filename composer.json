@@ -1,0 +1,16 @@
+{
+    "name": "onose/smart-login-security",
+    "description": "Advanced WordPress login security plugin.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "SmartLoginSecurity\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Onose Ogbidi"
+        }
+    ],
+    "require": {}
+}
