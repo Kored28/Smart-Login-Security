@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -19,6 +19,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router": "^8.0.1",
+    "recharts": "^3.8.0",
     "shadcn": "^4.11.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.1",

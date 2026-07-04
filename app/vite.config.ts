@@ -10,11 +10,17 @@ export default defineConfig({
   ],
   build: {
     outDir: 'dist',
+    cssCodeSplit: false,  
+    chunkSizeWarningLimit: 1000,
     rolldownOptions: {
       input: 'src/main.tsx',
       output: {
         entryFileNames: 'bundle.js',
-        assetFileNames: 'bundle.css'
+        chunkFileNames: 'bundle.js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) return 'bundle.css'
+          return '[name][extname]'
+        },
       }
     }
   }
