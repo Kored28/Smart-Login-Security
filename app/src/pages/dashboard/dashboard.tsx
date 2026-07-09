@@ -20,7 +20,7 @@ const events = [
         status: 'Failed',
         event: 'Failed attempt',
         user: 'appy',
-        ip: 'IP: 192.168.1.112',
+        ip: '192.168.1.112',
         userAgent: 'unknown',
         timestamp: '3 min',
     },
@@ -28,7 +28,7 @@ const events = [
         status: 'Success',
         event: 'Success attempt',
         user: 'appy',
-        ip: 'IP: 192.162.1.100',
+        ip: '192.162.1.100',
         userAgent: 'Mac Chrome',
         timestamp: '5 min',
     },
@@ -36,7 +36,7 @@ const events = [
         status: 'Failed',
         event: 'Failed attempt',
         user: 'fred',
-        ip: 'IP: 192.122.1.102',
+        ip: '192.122.1.102',
         userAgent: 'Windows',
         timestamp: '10 min',
     },
@@ -50,11 +50,12 @@ const Dashboard = () => {
             text="Real-time monitoring of your site's access security."
             buttonIcon={<RotateCcw />}
             buttonText="Force Scan"
+            isButton
             isSelect
         />
 
         {/* Cards */}
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
             <Card 
                 className={`bg-[#FFFFFFCC] p-5 border border-[#E2E8F0CC] 
                     rounded-[12px] backdrop-blur-sm flex flex-col

@@ -1,5 +1,4 @@
 import { CalendarDays } from "lucide-react";
-import { Button } from "../components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,12 +9,14 @@ import {
 } from "../components/ui/select";
 import { timelines } from '../components/store'
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 
 interface HeaderProps {
     heading: string;
     text: string;
     isSelect?: boolean;
+    isButton?: boolean;
     buttonText?: string;
     buttonIcon?: React.ReactElement;
     buttonClicked?: () => void;
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({
     heading, 
     text,
     isSelect,
+    isButton,
     buttonText,
     buttonIcon, 
     buttonClicked
@@ -36,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({
             <h1 className="font-semibold text-[24px] leading-2 tracking-[-0.48px]">
                 {heading}
             </h1>
-            <p className="text-p-foreground text-sm leading-2 my-0">
+            <p className="text-p-foreground text-sm sm:leading-2 my-0">
                 {text}
             </p>
         </div>
@@ -66,13 +68,15 @@ const Header: React.FC<HeaderProps> = ({
                 </>
             )}
 
-            <Button 
-            onClick={buttonClicked}
-            className="bg-accent hover:bg-accent text-accent-foreground text-xs leading-3.5 py-2.5 px-4 rounded-[8px]"
-            >
-                {buttonIcon}
-                {buttonText}
-            </Button>
+            {isButton && (
+                <Button 
+                onClick={buttonClicked}
+                className="bg-accent hover:bg-accent text-accent-foreground text-xs leading-3.5 py-2.5 px-4 rounded-[8px]"
+                >
+                    {buttonIcon}
+                    {buttonText}
+                </Button>
+            )}
         </div>
     </div>
   )

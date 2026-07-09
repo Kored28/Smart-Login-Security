@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router/dom'
 import './index.css'
 import App from './App.tsx'
 import Dashboard from './pages/dashboard/dashboard.tsx'
+import Activity from './pages/activity/activity.tsx'
 
 const pageRouteMap: Record<string, string> = {
   'smart-login-security': '/',
@@ -30,7 +31,7 @@ const router = createHashRouter([
     element: <App />,
     children: [
       { index: true,       element: <Dashboard/> },
-      // { path: 'activity',  element: <Activity /> },
+       { path: 'activity',  element: <Activity /> },
       // { path: 'logs',      element: <Logs /> },
       // { path: 'settings',  element: <Settings /> },
     ]
