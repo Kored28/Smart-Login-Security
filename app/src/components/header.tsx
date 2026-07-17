@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
     const [selectedDays, setSelectedDays] = useState<number>(7)
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center">
+    <div className="flex flex-col gap-4 sm:flex-row justify-between sm:items-center">
         <div className="flex flex-col gap-0">
             <h1 className="font-semibold text-[24px] leading-2 tracking-[-0.48px]">
                 {heading}
@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({
                         value={String(selectedDays)}
                         onValueChange={(val) => setSelectedDays(Number(val))}
                     >
-                        <SelectTrigger className="rounded-[8px]">
+                        <SelectTrigger className="rounded-[8px] w-full">
                             <CalendarDays />
                             <SelectValue placeholder="Select timeline" />
                         </SelectTrigger>

@@ -55,7 +55,7 @@ const Dashboard = () => {
         />
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <Card 
                 className={`bg-[#FFFFFFCC] p-5 border border-[#E2E8F0CC] 
                     rounded-[12px] backdrop-blur-sm flex flex-col
@@ -206,18 +206,18 @@ const Dashboard = () => {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <AreaChartBoard />
             <BarsChartBoard />
         </div>
 
         {/* Table */}
-        <div>
+        <div className="overflow-hidden border border-bd-secondary rounded-[12px] bg-white shadow-sm">
             <Table>
                 <TableHeader>
                     <TableRow 
                         className={`flex flex-row items-center justify-between px-6 h-14.25
-                            bg-[#EFF4FF] border-b border-[#C2C6D6] rounded-t-[12px] py-4
+                            bg-[#EFF4FF] border-b border-bd-secondary rounded-t-[12px] py-4
                         `}
                     >
                         <TableHead className="text-base font-semibold leading-6 px-0 h-auto">
@@ -229,7 +229,7 @@ const Dashboard = () => {
                         </a>
                     </TableRow>
                 </TableHeader>
-                <TableBody className="bg-white rounded-b-[12px]">
+                <TableBody className="bg-white">
                     {events.map((event, index) => (
                         <TableRow key={index}>
                             <TableCell className="flex flex-row justify-between items-center px-6 py-4">

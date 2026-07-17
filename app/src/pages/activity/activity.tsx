@@ -1,5 +1,6 @@
 import { LogIn, ShieldX, Monitor, Smartphone, Terminal } from 'lucide-react';
 
+import { useEffect, useState } from 'react';
 import Header from '../../components/header';
 import { 
     Tabs,
@@ -19,7 +20,6 @@ import {
 import { Card, CardContent, CardHeader } from '../../components/ui/card';
 import ShieldC from '../../assets/Container shield.svg';
 import Pagination from '../../components/pagination';
-import { useEffect, useState } from 'react';
 import { Skeleton } from '../../components/ui/skeleton';
 
 interface LoginRecord {
@@ -159,7 +159,6 @@ const SkeletonRow = () => {
 
 
 // MAIN FUNCTION
-
 const Activity = () => {
     const [page, setPage] = useState(1);
     //const [recents, setRecents] = useState<LoginRecord[]>([]);
@@ -239,7 +238,7 @@ const Activity = () => {
 
        {/* Cards */}
        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-            <Card className='bg-white border border-[#C2C6D6] rounded-[12px] gap-1 p-5'>
+            <Card className='bg-white border border-bd-secondary rounded-[12px] gap-1 p-5'>
                 <CardHeader className='flex flex-row gap-2.75 items-center p-0'>
                     <LogIn color='#0058BE' size={14}/>
                     <h3 className='text-secondary-foreground text-[12px] font-medium leading-4 tracking-[0.6px]'>
@@ -257,7 +256,7 @@ const Activity = () => {
             </Card>
 
             
-            <Card className='bg-white border border-[#C2C6D6] rounded-[12px] gap-1 p-5'>
+            <Card className='bg-white border border-bd-secondary rounded-[12px] gap-1 p-5'>
                 <CardHeader className='flex flex-row gap-2.75 items-center p-0'>
                     <ShieldX color="#BA1A1A" size={14}/>
                     <h3 className='text-secondary-foreground text-[12px] font-medium leading-4 tracking-[0.6px]'>
@@ -274,7 +273,7 @@ const Activity = () => {
                 </CardContent>
             </Card>
 
-            <Card className='bg-white border border-[#C2C6D6] rounded-[12px] gap-1 p-5'>
+            <Card className='bg-white border border-bd-secondary rounded-[12px] gap-1 p-5'>
                 <CardHeader className='flex flex-row gap-2.75 items-center p-0'>
                     <LogIn color='#0058BE' size={14}/>
                     <h3 className='text-secondary-foreground text-[12px] font-medium leading-4 tracking-[0.6px]'>
@@ -311,11 +310,11 @@ const Activity = () => {
 
 
        {/* Table */}
-        <div>
+        <div className="overflow-hidden border border-bd-secondary rounded-[12px] bg-white shadow-sm">
             <Table>
                 <TableHeader>
                     <TableRow
-                        className="grid grid-cols-6 px-6 h-14.25 bg-[#EFF4FF] border-b border-[#C2C6D6] rounded-t-[12px] py-4"
+                        className="grid grid-cols-6 px-6 h-14.25 bg-[#EFF4FF] border-b border-bd-secondary rounded-t-[12px] py-4"
                     >
                         <TableHead className="text-[12px] font-medium tracking-[0.6px] px-0 h-auto">
                             IP ADDRESS
@@ -399,13 +398,17 @@ const Activity = () => {
                 </TableBody>
 
                 <TableFooter className='bg-white rounded-b-[12px]'>
-                    <Pagination 
-                        currentPage={page}
-                        totalPages={Math.ceil(recents.length/ 4)}
-                        totalEntries={recents.length}
-                        entriesPerPage={4}
-                        onPageChange={setPage}
-                    />
+                    <TableRow>
+                        <TableCell colSpan={6} className='p-0'>
+                            <Pagination 
+                                currentPage={page}
+                                totalPages={Math.ceil(recents.length/ 4)}
+                                totalEntries={recents.length}
+                                entriesPerPage={4}
+                                onPageChange={setPage}
+                            />
+                        </TableCell>
+                    </TableRow>
                 </TableFooter>
             </Table>
         </div>

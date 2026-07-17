@@ -13,7 +13,9 @@
   --p-foreground: #424754;
   --accent: #0058BE;
   --accent-foreground: #FFFFFF;
-  --border: #E2E8F0CC
+  --border: #E2E8F0CC;
+  --bd-secondary: #C2C6D6;
+  --input: #EFF4FF;
 }
 
 
@@ -37,6 +39,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-bd-secondary: var(--bd-secondary);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);

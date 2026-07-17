@@ -6,12 +6,14 @@ import './index.css'
 import App from './App.tsx'
 import Dashboard from './pages/dashboard/dashboard.tsx'
 import Activity from './pages/activity/activity.tsx'
+import Logs from './pages/logs/logs.tsx'
+import Settings from './pages/settings/settings.tsx'
 
 const pageRouteMap: Record<string, string> = {
   'smart-login-security': '/',
   'smart-login-security-activity': '/activity',
   'smart-login-security-logs': '/logs',
-  'smart-security-settings': '/settings'
+  'smart-login-security-settings': '/settings'
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -31,9 +33,9 @@ const router = createHashRouter([
     element: <App />,
     children: [
       { index: true,       element: <Dashboard/> },
-       { path: 'activity',  element: <Activity /> },
-      // { path: 'logs',      element: <Logs /> },
-      // { path: 'settings',  element: <Settings /> },
+      { path: 'activity',  element: <Activity /> },
+      { path: 'logs',      element: <Logs /> },
+      { path: 'settings',  element: <Settings /> },
     ]
   }
 ])
