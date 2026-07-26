@@ -12,15 +12,26 @@ class Logger {
     private const TIME_MINUTES_WINDOW = 60;
 
 
-    public function get_logs(): array{
+   public function get_logs(int $page = 1, int $per_page = 4): array {
         global $wpdb;
-
         $table = $wpdb->prefix . 'smart_login_logs';
-        $query = "SELECT * FROM {$table}";
-        $results = $wpdb->get_results($query);
 
+        $offset = ($page - 1) * $per_page;
 
-        return is_array($results) ? $results : [];
+        $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table}");
+
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$table} ORDER BY attempted_at DESC LIMIT %d OFFSET %d",
+                $per_page,
+                $offset
+            )
+        );
+
+        return [
+            'rows'  => is_array($results) ? $results : [],
+            'total' => $total,
+        ];
     }
 
     public function events() {
@@ -33,7 +44,7 @@ class Logger {
             $wpdb->prepare(
                 "SELECT ip, COOUNT(*) AS attempts
                 FROM {$table}
-                WHERE status_login = %$
+                WHERE status_login = %s
                     AND attempted_at >= NOW() - INTERVAL %d MINUTE
                 GROUP BY ip
                 ORDER BY attempts DESC",
@@ -60,9 +71,9 @@ class Logger {
                 'risk' => $risk,
                 'description' => $description
             ];
-
-            return $events;
         }
+
+        return $events;
     }
 
     private function clarify_risk(int $attempts, string $ip): array{
