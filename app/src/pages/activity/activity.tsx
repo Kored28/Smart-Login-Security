@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Header from '../../components/header';
 import { 
     Tabs,
-    TabsContent,
     TabsList,
     TabsTrigger,
 } from '../../components/ui/tabs';
@@ -18,10 +17,12 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { Card, CardContent, CardHeader } from '../../components/ui/card';
-import ShieldC from '../../assets/Container shield.svg';
+import ShieldC from '../../assets/Container-shield.svg';
+import ShieldBrown from '../../assets/shield-dia-brown.svg';
 import Pagination from '../../components/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 
+// Types
 interface LoginRecord {
     status: "Success" | "Failed" | "Blocked";
     user: string;
@@ -30,69 +31,18 @@ interface LoginRecord {
     timestamp: string;
 }
 
+type SecurityStatus = 'Secure' | 'Vigilant' | 'Under Attack';
 
-const recents = [
-    {
-        status: 'Failed',
-        user: 'appy',
-        ip: '192.168.1.112',
-        userAgent: 'unknown',
-        timestamp: '3 min',
-    },
-    {
-        status: 'Success',
-        user: 'appy',
-        ip: '192.162.1.100',
-        userAgent: 'Chrome on MacOS',
-        timestamp: '5 min',
-    },
-    {
-        status: 'Failed',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on Windows',
-        timestamp: '10 min',
-    },
-    {
-        status: 'Failed',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on Windows',
-        timestamp: '10 min',
-    },
-    {
-        status: 'Failed',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on Windows',
-        timestamp: '10 min',
-    },
-    {
-        status: 'Success',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on Windows',
-        timestamp: '10 min',
-    },
-    {
-        status: 'Success',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on IOS',
-        timestamp: '10 min',
-    },
-    {
-        status: 'Blocked',
-        user: 'fred',
-        ip: '192.122.1.102',
-        userAgent: 'Chrome on Android',
-        timestamp: '10 min',
-    },
-];
+interface Stats {
+    total_logins: number;
+    failed_attempts: number;
+    threats_blocked: number;
+    security_status: SecurityStatus;
+}
 
 
+// Side Functions
 const DeviceIcon = ({ userAgent }: { userAgent: string }) => {
-    console.log('userAgent received:', JSON.stringify(userAgent));
     
     const ua = (userAgent ?? '').toLowerCase();
     if (ua.includes('windows')) {
@@ -109,7 +59,7 @@ const DeviceIcon = ({ userAgent }: { userAgent: string }) => {
 
 const StatusBadge = ({ status }: { status: string }) => {
     const styles: Record<string, string> = {
-        Success: "bg-[#FDF3E2] text-[#B4780A]",
+        Success: "bg-[#DCFCE7] text-[#16A34A]",
         Failed: "bg-[#FBEAEA] text-[#D92D20] border border-[#F4C2C2]",
         Blocked: "bg-[#F2F2F5] text-[#6B7280]",
     };
@@ -124,6 +74,12 @@ const StatusBadge = ({ status }: { status: string }) => {
         </span>
     );
 }
+
+const statusConfig: Record<SecurityStatus, { color: string }> = {
+    'Secure': { color: '#16A34A' },
+    'Vigilant': { color: '#924700' },
+    'Under Attack': { color: '#D92D20' },
+};
 
 const SkeletonRow = () => {
     return (
@@ -158,24 +114,42 @@ const SkeletonRow = () => {
 }
 
 
+
 // MAIN FUNCTION
 const Activity = () => {
     const [page, setPage] = useState(1);
-    //const [recents, setRecents] = useState<LoginRecord[]>([]);
+    const [recents, setRecents] = useState<LoginRecord[]>([]);
     const [totalEntries, setTotalEntries] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [status, setStatus] = useState<'all' | 'success' | 'failed' | 'blocked'>('all');
+    const [isStatsLoading, setIsStatsLoading] = useState(true);
+    const [stats, setStats] = useState<Stats>({
+        total_logins: 0,
+        failed_attempts: 0,
+        threats_blocked: 0,
+        security_status: 'Secure',
+    });
+    
 
+    // GET Logs
     useEffect(() => {
         let cancelled = false;
 
         async function fetchLogs() {
             setIsLoading(true);
             try {
-                const response = await fetch(`/wp-json/smart-login-security/v1/logs?page=${page}&per_page=4`);
+                const response = await fetch(
+                    `${window.smartLoginSecurity.apiUrl}/logs?page=${page}&per_page=4&status=${status}`,
+                    {
+                        headers: {
+                            'X-WP-Nonce': window.smartLoginSecurity.nonce,
+                        },
+                    }
+                );
                 const data = await response.json();
 
                 if (!cancelled) {
-                    //setRecents(data.rows);
+                    setRecents(data.rows);
                     setTotalEntries(data.total);
                 }
             } catch (error) {
@@ -192,7 +166,32 @@ const Activity = () => {
         return () => {
             cancelled = true;
         };
-    }, [page]);
+    }, [page, status]);
+
+    // GET stats
+    useEffect(() => {
+        async function fetchStats() {
+            setIsStatsLoading(true);
+            try {
+                const response = await fetch(
+                    `${window.smartLoginSecurity.apiUrl}/logs/stats`,
+                    {
+                        headers: {
+                            'X-WP-Nonce': window.smartLoginSecurity.nonce,
+                        },
+                    }
+                );
+                const data = await response.json();
+                setStats(data);
+            } catch (error) {
+                console.error("Failed to fetch stats:", error);
+            } finally {
+                setIsStatsLoading(false);
+            }
+        }
+
+        fetchStats();
+    }, []);
    
   return (
     <div className='flex flex-col gap-8 max-w-5xl mx-auto'>
@@ -203,7 +202,11 @@ const Activity = () => {
             />
 
             <Tabs
-                defaultValue='all'
+                value={status}
+                onValueChange={(value) => {
+                    setStatus(value as typeof status);
+                    setPage(1);
+                }}
             >
                 <TabsList
                     className='bg-[#DCE9FF] p-1 rounded-[8px]'
@@ -246,12 +249,13 @@ const Activity = () => {
                     </h3>
                 </CardHeader>
                 <CardContent className='flex flex-row gap-2 items-end p-0'>
-                    <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
-                        2,481
-                    </h2>
-                    <p className='text-[#924700] text-[11px] font-semibold leading-3.5'>
-                        +12%
-                    </p>
+                   {isStatsLoading ? (
+                        <Skeleton className="h-8 w-16 bg-secondary-foreground" />
+                    ) : (
+                        <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
+                            {stats.total_logins.toLocaleString()}
+                        </h2>
+                    )}
                 </CardContent>
             </Card>
 
@@ -264,29 +268,31 @@ const Activity = () => {
                     </h3>
                 </CardHeader>
                 <CardContent className='flex flex-row gap-2 items-end p-0'>
-                    <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
-                       42
-                    </h2>
-                    <p className='text-[#924700] text-[11px] font-semibold leading-3.5'>
-                        -4%
-                    </p>
+                    {isStatsLoading ? (
+                        <Skeleton className="h-8 w-12 bg-secondary-foreground" />
+                    ) : (
+                        <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
+                            {stats.failed_attempts.toLocaleString()}
+                        </h2>
+                    )}
                 </CardContent>
             </Card>
 
             <Card className='bg-white border border-bd-secondary rounded-[12px] gap-1 p-5'>
                 <CardHeader className='flex flex-row gap-2.75 items-center p-0'>
-                    <LogIn color='#0058BE' size={14}/>
+                    <img src={ShieldBrown} color='#0058BE' />
                     <h3 className='text-secondary-foreground text-[12px] font-medium leading-4 tracking-[0.6px]'>
                         Threats Blocked
                     </h3>
                 </CardHeader>
                 <CardContent className='flex flex-row gap-2 items-end p-0'>
-                    <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
-                        18
-                    </h2>
-                    <p className='text-[#924700] text-[11px] font-semibold leading-3.5'>
-                        +2
-                    </p>
+                   {isStatsLoading ? (
+                        <Skeleton className="h-8 w-10 bg-secondary-foreground" />
+                    ) : (
+                        <h2 className='text-primary-foreground text-[24px] font-semibold leading-8 tracking-[-0.48px]'>
+                            {stats.threats_blocked.toLocaleString()}
+                        </h2>
+                    )}
                 </CardContent>
             </Card>
 
@@ -297,10 +303,19 @@ const Activity = () => {
                     </h3>
                 </CardHeader>
                 <CardContent className='flex flex-row gap-2 items-center p-0'>
-                    <div className="w-2 h-2 rounded-full bg-[#924700]"></div>
-                    <h2 className='text-accent text-[16px] font-semibold leading-6'>
-                        Vigilant
-                    </h2>
+                    {isStatsLoading ? (
+                        <Skeleton className="h-6 w-20 bg-secondary-foreground" />
+                    ) : (
+                        <>
+                            <div
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: statusConfig[stats.security_status].color }}
+                            ></div>
+                            <h2 className='text-accent text-[16px] font-semibold leading-6'>
+                                {stats.security_status}
+                            </h2>
+                        </>
+                    )}
                 </CardContent>
                 <img src={ShieldC} alt="Shield" className='absolute right-0 bottom-0'/>
             </Card>
@@ -403,7 +418,7 @@ const Activity = () => {
                             <Pagination 
                                 currentPage={page}
                                 totalPages={Math.ceil(recents.length/ 4)}
-                                totalEntries={recents.length}
+                                totalEntries={totalEntries}
                                 entriesPerPage={4}
                                 onPageChange={setPage}
                             />

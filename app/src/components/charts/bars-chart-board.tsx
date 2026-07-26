@@ -12,15 +12,20 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "../../components/ui/chart";
+import { Skeleton } from "../../components/ui/skeleton";
 
-const chartData = [
-  { day: "Monday", success: 186, failed: 80 },
-  { day: "Tuesday", success: 305, failed: 200 },
-  { day: "Wednesday", success: 237, failed: 120 },
-  { day: "Thursday", success: 73, failed: 190 },
-  { day: "Friday", success: 209, failed: 130 },
-  { day: "Saturday", success: 214, failed: 140 },
-];
+interface DailyStat {
+  day: string;
+  date: string;
+  success: number;
+  failed: number;
+  attempts: number;
+}
+
+interface BarsChartBoardProps {
+  data: DailyStat[];
+  isLoading?: boolean;
+}
 
 const chartConfig = {
   success: {
@@ -34,7 +39,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-const BarsChartBoard = () => {
+const BarsChartBoard = ({ data, isLoading }: BarsChartBoardProps) => {
   return (
     <Card
       className={`bg-[#FFFFFFCC] p-6 border border-[#E2E8F0CC] 
@@ -61,27 +66,31 @@ const BarsChartBoard = () => {
         </CardAction>
       </CardHeader>
       <CardContent className="px-0">
-        <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-              dataKey="day"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-              />
-              <Bar dataKey="success" fill="var(--color-success)" radius={4} />
-              <Bar dataKey="failed" fill="var(--color-failed)" radius={4} />
-            </BarChart>
-        </ChartContainer>
+        {isLoading ? (
+            <Skeleton className="h-[200px] w-full bg-secondary-foreground" />
+        ) : (
+            <ChartContainer config={chartConfig}>
+                <BarChart
+                  accessibilityLayer
+                  data={data}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                  />
+                  <Bar dataKey="success" fill="var(--color-success)" radius={4} />
+                  <Bar dataKey="failed" fill="var(--color-failed)" radius={4} />
+                </BarChart>
+            </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )

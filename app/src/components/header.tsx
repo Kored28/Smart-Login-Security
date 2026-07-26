@@ -8,7 +8,6 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { timelines } from '../components/store'
-import { useState } from "react";
 import { Button } from "./ui/button";
 
 
@@ -20,6 +19,8 @@ interface HeaderProps {
     buttonText?: string;
     buttonIcon?: React.ReactElement;
     buttonClicked?: () => void;
+    selectedDays?: number;
+    onDaysChange?: (days: number) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -29,9 +30,10 @@ const Header: React.FC<HeaderProps> = ({
     isButton,
     buttonText,
     buttonIcon, 
-    buttonClicked
+    buttonClicked,
+    selectedDays,
+    onDaysChange
 }) => {
-    const [selectedDays, setSelectedDays] = useState<number>(7)
   return (
     <div className="flex flex-col gap-4 sm:flex-row justify-between sm:items-center">
         <div className="flex flex-col gap-0">
@@ -47,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({
                 <>
                     <Select
                         value={String(selectedDays)}
-                        onValueChange={(val) => setSelectedDays(Number(val))}
+                        onValueChange={(val) => onDaysChange?.(Number(val))}
                     >
                         <SelectTrigger className="rounded-[8px] w-full">
                             <CalendarDays />

@@ -13,15 +13,20 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "../ui/chart";
+import { Skeleton } from "../ui/skeleton";
 
-const chartData = [
-  { day: "Monday", attempts: 186 },
-  { day: "Tuesday", attempts: 305 },
-  { day: "Wednesday", attempts: 237 },
-  { day: "Thursday", attempts: 73 },
-  { day: "Friday", attempts: 209 },
-  { day: "Saturday", attempts: 214 },
-];
+interface DailyStat {
+  day: string;
+  date: string;
+  success: number;
+  failed: number;
+  attempts: number;
+}
+
+interface AreaChartBoardProps {
+  data: DailyStat[];
+  isLoading?: boolean;
+}
 
 const chartConfig = {
   attempts: {
@@ -30,7 +35,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const AreaChartBoard = () => {
+const AreaChartBoard = ({ data, isLoading }: AreaChartBoardProps) => {
   return (
     <Card
         className={`bg-[#FFFFFFCC] p-6 border border-[#E2E8F0CC] 
@@ -51,37 +56,41 @@ const AreaChartBoard = () => {
             </CardAction>
         </CardHeader>
         <CardContent className="px-0">
-            <ChartContainer config={chartConfig}>
-                <AreaChart
-                    accessibilityLayer
-                    data={chartData}
-                    margin={{
-                        left: 12,
-                        right: 12,
-                    }}
-                >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    padding={{ left: 2, right: 2 }}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    />
-                    <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="line" />}
-                    />
-                    <Area
-                    dataKey="attempts"
-                    type="natural"
-                    fill="var(--color-attempts)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-attempts)"
-                    />
-                </AreaChart>
-            </ChartContainer>
+            {isLoading ? (
+                <Skeleton className="h-[200px] w-full bg-secondary-foreground" />
+            ) : (
+                <ChartContainer config={chartConfig}>
+                    <AreaChart
+                        accessibilityLayer
+                        data={data}
+                        margin={{
+                            left: 12,
+                            right: 12,
+                        }}
+                    >
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                        dataKey="day"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        padding={{ left: 2, right: 2 }}
+                        tickFormatter={(value) => value.slice(0, 3)}
+                        />
+                        <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent indicator="line" />}
+                        />
+                        <Area
+                        dataKey="attempts"
+                        type="natural"
+                        fill="var(--color-attempts)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-attempts)"
+                        />
+                    </AreaChart>
+                </ChartContainer>
+            )}
         </CardContent>
     </Card>
   )
