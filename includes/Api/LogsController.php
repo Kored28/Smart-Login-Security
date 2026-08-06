@@ -15,32 +15,32 @@ class LogsController {
 
     public function register_routes(): void {
         register_rest_route('smart-login-security/v1', '/logs', [
-            'methods'             => 'GET',
-            'callback'            => [$this, 'get_logs'],
+            'methods' => 'GET',
+            'callback' => [$this, 'get_logs'],
             'permission_callback' => function () {
                 return current_user_can('manage_options');
             },
         ]);
 
         register_rest_route('smart-login-security/v1', '/logs/stats', [
-            'methods'             => 'GET',
-            'callback'            => [$this, 'get_stats'],
+            'methods' => 'GET',
+            'callback' => [$this, 'get_stats'],
             'permission_callback' => function () {
                 return current_user_can('manage_options');
             },
         ]);
 
         register_rest_route('smart-login-security/v1', '/logs/daily', [
-            'methods'             => 'GET',
-            'callback'            => [$this, 'get_daily'],
+            'methods' => 'GET',
+            'callback' => [$this, 'get_daily'],
             'permission_callback' => function () {
                 return current_user_can('manage_options');
             },
         ]);
 
         register_rest_route('smart-login-security/v1', '/logs/events', [
-            'methods'             => 'GET',
-            'callback'            => [$this, 'get_events'],
+            'methods' => 'GET',
+            'callback' => [$this, 'get_events'],
             'permission_callback' => [$this, 'check_permission'],
         ]);
     }
@@ -53,16 +53,16 @@ class LogsController {
         global $wpdb;
         $table = $wpdb->prefix . 'smart_login_logs';
 
-        $page     = max(1, (int) $request->get_param('page') ?: 1);
+        $page = max(1, (int) $request->get_param('page') ?: 1);
         $per_page = max(1, (int) $request->get_param('per_page') ?: 10);
-        $status   = $request->get_param('status'); 
-        $offset   = ($page - 1) * $per_page;
+        $status = $request->get_param('status'); 
+        $offset = ($page - 1) * $per_page;
 
         $where  = '';
         $params = [];
 
         if ($status && $status !== 'all') {
-            $where    = 'WHERE status_login = %s';
+            $where = 'WHERE status_login = %s';
             $params[] = ucfirst($status);
         }
 

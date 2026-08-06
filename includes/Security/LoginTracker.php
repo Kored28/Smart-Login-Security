@@ -18,7 +18,6 @@ class LoginTracker {
         // Tracking successful Login Attempt
         add_action('wp_login', [$this, 'track_success_login'], 10);
 
-
     }
 
     public function track_failed_login(string $username): array {
@@ -51,6 +50,10 @@ class LoginTracker {
                 'attempted_at' => current_time('mysql')
             ],['%s', '%s', '%s', '%s', '%s']
         );
+
+        // Checks if the Ip has a warning or has been blocked
+        $detector = new BruteForceDetector(new EventLogger(), new IpBlocker());
+        $detector->check($ip);
 
         return $attempts;
     }

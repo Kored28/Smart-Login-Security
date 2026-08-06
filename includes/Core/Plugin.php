@@ -3,7 +3,11 @@
 namespace SmartLoginSecurity\Core;
 
 use SmartLoginSecurity\Admin\AdminController;
+use SmartLoginSecurity\Api\BlockedIpsController;
 use SmartLoginSecurity\Api\LogsController;
+use SmartLoginSecurity\Api\SecurityEventsController;
+use SmartLoginSecurity\Security\IpBlocker;
+use SmartLoginSecurity\Security\LoginGate;
 use SmartLoginSecurity\Security\LoginTracker;
 
 if(! defined('ABSPATH') ){
@@ -18,9 +22,19 @@ class Plugin {
         $log_controller = new LogsController();
         $log_controller->init();
 
+        $security_events_controller = new SecurityEventsController();
+        $security_events_controller->init();
+
+        $blocked_ips_controller = new BlockedIpsController();
+        $blocked_ips_controller->init();
+        
+
         // Security Class
         $login_tracker = new LoginTracker();
         $login_tracker->init();
+
+        $login_gate = new LoginGate(new IpBlocker());
+        $login_gate->init();
 
         if(is_admin()){
             $admin = new AdminController();
