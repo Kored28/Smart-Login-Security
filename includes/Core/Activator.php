@@ -7,7 +7,7 @@ if(! defined('ABSPATH') ){
 }
 
 class Activator {
-    public function activate() {
+    public static function activate() {
         self::create_login_logs_table();
         self::create_security_events_table();
         self::create_blocked_ips_table();
