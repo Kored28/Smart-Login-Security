@@ -2,14 +2,14 @@
 
 namespace SmartLoginSecurity\Security;
 
+use SmartLoginSecurity\Settings\Settings;
+
 if (! defined('ABSPATH')) {
     die;
 }
 
 class BruteForceDetector {
 
-    private const WARNING_THRESHOLD = 5;
-    private const BLOCK_THRESHOLD = 15;
     private const WINDOW_SECONDS = 30;
 
     private EventLogger $event_logger;
@@ -21,6 +21,13 @@ class BruteForceDetector {
     }
 
     public function check(string $ip): void {
+        $settings = Settings::get();
+
+        // Respect the Brute Force Protection toggle
+        if (! $settings['brute_force_enabled']) {
+            return;
+        }
+
         global $wpdb;
         $table = $wpdb->prefix . 'smart_login_logs';
 
@@ -33,9 +40,12 @@ class BruteForceDetector {
             $window_start
         ));
 
-        if ($attempts >= self::BLOCK_THRESHOLD) {
-            $this->handle_block($ip, $attempts);
-        } elseif ($attempts >= self::WARNING_THRESHOLD) {
+        $block_threshold   = (int) $settings['login_attempt_limit'];
+        $warning_threshold = max(1, intdiv($block_threshold, 2));
+
+        if ($attempts >= $block_threshold) {
+            $this->handle_block($ip, $attempts, $settings);
+        } elseif ($attempts >= $warning_threshold) {
             $this->handle_warning($ip, $attempts);
         }
     }
@@ -54,12 +64,14 @@ class BruteForceDetector {
         );
     }
 
-    private function handle_block(string $ip, int $attempts): void {
+    private function handle_block(string $ip, int $attempts, array $settings): void {
+        $duration_seconds = (int) $settings['lockout_duration_minutes'] * MINUTE_IN_SECONDS;
+
         $this->ip_blocker->block(
             $ip,
             sprintf('Brute force: %d failed attempts in %d seconds', $attempts, self::WINDOW_SECONDS),
             'system',
-            HOUR_IN_SECONDS
+            $duration_seconds
         );
 
         if ($this->already_flagged_recently($ip, 'IP Blocked: Brute Force Attack')) {

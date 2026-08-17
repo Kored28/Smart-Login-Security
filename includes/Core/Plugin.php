@@ -6,9 +6,11 @@ use SmartLoginSecurity\Admin\AdminController;
 use SmartLoginSecurity\Api\BlockedIpsController;
 use SmartLoginSecurity\Api\LogsController;
 use SmartLoginSecurity\Api\SecurityEventsController;
+use SmartLoginSecurity\Api\SettingsController;
 use SmartLoginSecurity\Security\IpBlocker;
 use SmartLoginSecurity\Security\LoginGate;
 use SmartLoginSecurity\Security\LoginTracker;
+use SmartLoginSecurity\Security\SessionManager;
 
 if(! defined('ABSPATH') ){
     die;
@@ -27,6 +29,9 @@ class Plugin {
 
         $blocked_ips_controller = new BlockedIpsController();
         $blocked_ips_controller->init();
+
+        $settings_controller = new SettingsController();
+        $settings_controller->init();
         
 
         // Security Class
@@ -35,6 +40,9 @@ class Plugin {
 
         $login_gate = new LoginGate(new IpBlocker());
         $login_gate->init();
+
+        $session_manager = new SessionManager();
+        $session_manager->init();
 
         if(is_admin()){
             $admin = new AdminController();
