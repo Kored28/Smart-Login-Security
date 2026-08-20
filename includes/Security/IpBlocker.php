@@ -12,24 +12,41 @@ class IpBlocker {
         global $wpdb;
         $table = $wpdb->prefix . 'smart_blocked_ips';
 
-        $expires_at = $duration_seconds
-            ? gmdate('Y-m-d H:i:s', time() + $duration_seconds)
-            : null;
+        $blocked_at = current_time('mysql', true);
 
-        $wpdb->query($wpdb->prepare(
-            "INSERT INTO {$table} (ip, reason, blocked_by, blocked_at, expires_at)
-             VALUES (%s, %s, %s, %s, %s)
-             ON DUPLICATE KEY UPDATE
-                reason = VALUES(reason),
-                blocked_by = VALUES(blocked_by),
-                blocked_at = VALUES(blocked_at),
-                expires_at = VALUES(expires_at)",
-            $ip,
-            $reason,
-            $blocked_by,
-            current_time('mysql', true),
-            $expires_at
-        ));
+        if ($duration_seconds !== null) {
+            $expires_at = gmdate('Y-m-d H:i:s', time() + $duration_seconds);
+
+            $wpdb->query($wpdb->prepare(
+                "INSERT INTO {$table} (ip, reason, blocked_by, blocked_at, expires_at)
+                VALUES (%s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    reason = VALUES(reason),
+                    blocked_by = VALUES(blocked_by),
+                    blocked_at = VALUES(blocked_at),
+                    expires_at = VALUES(expires_at)",
+                $ip,
+                $reason,
+                $blocked_by,
+                $blocked_at,
+                $expires_at
+            ));
+        } else {
+            // Permanent block: expires_at must be a real SQL NULL, not a %s-bound value
+            $wpdb->query($wpdb->prepare(
+                "INSERT INTO {$table} (ip, reason, blocked_by, blocked_at, expires_at)
+                VALUES (%s, %s, %s, %s, NULL)
+                ON DUPLICATE KEY UPDATE
+                    reason = VALUES(reason),
+                    blocked_by = VALUES(blocked_by),
+                    blocked_at = VALUES(blocked_at),
+                    expires_at = NULL",
+                $ip,
+                $reason,
+                $blocked_by,
+                $blocked_at
+            ));
+        }
     }
 
     public function is_blocked(string $ip): bool {
